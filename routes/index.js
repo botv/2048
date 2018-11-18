@@ -1,4 +1,5 @@
 const express = require('express');
+const Agent = require('../scripts/agent');
 const router = express.Router();
 
 router.get('/', function(req, res) {
@@ -7,8 +8,8 @@ router.get('/', function(req, res) {
 
 router.post('/move', function (req, res) {
 	const grid = JSON.parse(req.body.grid);
-	console.log(grid);
-	res.end();
+	const action = Agent.action(grid);
+	res.send(action.toString());
 });
 
 module.exports = router;

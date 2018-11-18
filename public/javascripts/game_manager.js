@@ -127,13 +127,11 @@ GameManager.prototype.moveTile = function (tile, cell) {
 };
 
 // Move tiles on the grid in the specified direction
-GameManager.prototype.move = function (direction) {
+GameManager.prototype.move = function (direction, computer = false) {
 	// 0: up, 1: right, 2: down, 3: left
 	const self = this;
 
 	if (this.isGameTerminated()) return; // Don't do anything if the game's over
-
-	self.agentMove(JSON.stringify(this.grid.serialize()));
 
 	let cell, tile;
 
@@ -189,6 +187,10 @@ GameManager.prototype.move = function (direction) {
 		}
 
 		this.actuate();
+
+		if (!computer) {
+			self.agentMove(JSON.stringify(this.grid.serialize()));
+		}
 	}
 };
 
@@ -269,6 +271,19 @@ GameManager.prototype.tileMatchesAvailable = function () {
 	return false;
 };
 
+GameManager.prototype.directionString = function (direction) {
+	switch (direction) {
+		case 0:
+			return 'up';
+		case 1:
+			return 'right';
+		case 2:
+			return 'down';
+		case 3:
+			return 'left';
+	}
+};
+
 GameManager.prototype.positionsEqual = function (first, second) {
 	return first.x === second.x && first.y === second.y;
 };
@@ -278,7 +293,12 @@ GameManager.prototype.agentMove = function (grid) {
 		url: 'move',
 		type: 'POST',
 		dataType: 'text',
-		data: {grid}
+		data: {grid},
+		success: (data) => {
+			data = parseInt(data);
+			console.log(this.directionString(data));
+			this.move(data, true);
+		}
 	};
 
 	$.ajax(params);
