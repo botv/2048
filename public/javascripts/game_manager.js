@@ -10,6 +10,8 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 	this.inputManager.on('restart', this.restart.bind(this));
 	this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
 
+	this.agentMoving = false;
+
 	this.setup();
 }
 
@@ -128,6 +130,11 @@ GameManager.prototype.moveTile = function (tile, cell) {
 
 // Move tiles on the grid in the specified direction
 GameManager.prototype.move = function (direction, computer = false) {
+	// Only execute if agent is not moving
+	if (!computer && this.agentMoving) {
+		return
+	}
+
 	// 0: up, 1: right, 2: down, 3: left
 	const self = this;
 
@@ -289,6 +296,8 @@ GameManager.prototype.positionsEqual = function (first, second) {
 };
 
 GameManager.prototype.agentMove = function (grid) {
+	this.agentMoving = true;
+
 	const params = {
 		url: 'move',
 		type: 'POST',
@@ -298,8 +307,11 @@ GameManager.prototype.agentMove = function (grid) {
 			data = parseInt(data);
 			console.log(this.directionString(data));
 			this.move(data, true);
+			this.agentMoving = false;g
 		}
 	};
 
-	$.ajax(params);
+	setTimeout(function (gameManager = this) {
+		$.ajax(params);
+	}, 500);
 };
