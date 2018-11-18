@@ -23,7 +23,7 @@ KeyboardInputManager.prototype.on = function (event, callback) {
 };
 
 KeyboardInputManager.prototype.emit = function (event, data) {
-	var callbacks = this.events[event];
+	const callbacks = this.events[event];
 	if (callbacks) {
 		callbacks.forEach(function (callback) {
 			callback(data);
@@ -32,9 +32,9 @@ KeyboardInputManager.prototype.emit = function (event, data) {
 };
 
 KeyboardInputManager.prototype.listen = function () {
-	var self = this;
+	const self = this;
 
-	var map = {
+	const map = {
 		38: 0, // Up
 		39: 1, // Right
 		40: 2, // Down
@@ -51,9 +51,9 @@ KeyboardInputManager.prototype.listen = function () {
 
 	// Respond to direction keys
 	document.addEventListener('keydown', function (event) {
-		var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
+		const modifiers = event.altKey || event.ctrlKey || event.metaKey ||
 			event.shiftKey;
-		var mapped = map[event.which];
+		const mapped = map[event.which];
 
 		if (!modifiers) {
 			if (mapped !== undefined) {
@@ -74,8 +74,8 @@ KeyboardInputManager.prototype.listen = function () {
 	this.bindButtonPress('.keep-playing-button', this.keepPlaying);
 
 	// Respond to swipe events
-	var touchStartClientX, touchStartClientY;
-	var gameContainer = document.getElementsByClassName('game-container')[0];
+	let touchStartClientX, touchStartClientY;
+	const gameContainer = document.getElementsByClassName('game-container')[0];
 
 	gameContainer.addEventListener(this.eventTouchstart, function (event) {
 		if ((!window.navigator.msPointerEnabled && event.touches.length > 1) ||
@@ -104,7 +104,7 @@ KeyboardInputManager.prototype.listen = function () {
 			return; // Ignore if still touching with one or more fingers
 		}
 
-		var touchEndClientX, touchEndClientY;
+		let touchEndClientX, touchEndClientY;
 
 		if (window.navigator.msPointerEnabled) {
 			touchEndClientX = event.pageX;
@@ -114,11 +114,11 @@ KeyboardInputManager.prototype.listen = function () {
 			touchEndClientY = event.changedTouches[0].clientY;
 		}
 
-		var dx = touchEndClientX - touchStartClientX;
-		var absDx = Math.abs(dx);
+		const dx = touchEndClientX - touchStartClientX;
+		const absDx = Math.abs(dx);
 
-		var dy = touchEndClientY - touchStartClientY;
-		var absDy = Math.abs(dy);
+		const dy = touchEndClientY - touchStartClientY;
+		const absDy = Math.abs(dy);
 
 		if (Math.max(absDx, absDy) > 10) {
 			// (right : left) : (down : up)
@@ -138,7 +138,7 @@ KeyboardInputManager.prototype.keepPlaying = function (event) {
 };
 
 KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
-	var button = document.querySelector(selector);
+	const button = document.querySelector(selector);
 	button.addEventListener('click', fn.bind(this));
 	button.addEventListener(this.eventTouchend, fn.bind(this));
 };

@@ -1,9 +1,14 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', function(req, res) {
+	res.render('index');
+});
+
+router.post('/move', function (req, res) {
+	const grid = JSON.parse(req.body.grid);
+	console.log(grid);
+	res.end();
 });
 
 module.exports = router;
