@@ -130,15 +130,11 @@ GameManager.prototype.moveTile = function (tile, cell) {
 
 // Move tiles on the grid in the specified direction
 GameManager.prototype.move = function (direction, computer = false) {
-	// Only execute if agent is not moving
-	if (!computer && this.agentMoving) {
-		return
-	}
-
 	// 0: up, 1: right, 2: down, 3: left
 	const self = this;
 
 	if (this.isGameTerminated()) return; // Don't do anything if the game's over
+	if (!computer && this.agentMoving) return; // Only execute if agent is not moving
 
 	let cell, tile;
 
@@ -307,7 +303,7 @@ GameManager.prototype.agentMove = function (grid) {
 			data = parseInt(data);
 			console.log(this.directionString(data));
 			this.move(data, true);
-			this.agentMoving = false;g
+			this.agentMoving = false;
 		}
 	};
 
