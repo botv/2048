@@ -7,8 +7,8 @@ router.get('/', function(req, res) {
 });
 
 router.post('/move', function (req, res) {
-	const grid = JSON.parse(req.body.grid);
-	const action = Agent.action(grid);
+	const state = JSON.parse(req.body.state);
+	const action = Agent.action(state);
 	res.send(action.toString());
 });
 

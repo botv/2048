@@ -288,12 +288,12 @@ GameManager.prototype.positionsEqual = function (first, second) {
 	return first.x === second.x && first.y === second.y;
 };
 
-GameManager.prototype.agentMove = function (grid) {
+GameManager.prototype.agentMove = function (state) {
 	const params = {
 		url: 'move',
 		type: 'POST',
 		dataType: 'text',
-		data: {grid},
+		data: {state},
 		success: (data) => {
 			data = parseInt(data);
 			console.log(this.directionString(data));
