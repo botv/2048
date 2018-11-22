@@ -1,4 +1,4 @@
-function GameManager(size, InputManager, Actuator, StorageManager) {
+function GameManager(size, InputManager, Actuator, StorageManager, multiplayer=true) {
 	this.size = size; // Size of the grid
 	this.inputManager = new InputManager;
 	this.storageManager = new StorageManager;
@@ -9,6 +9,9 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 	this.inputManager.on('move', this.move.bind(this));
 	this.inputManager.on('restart', this.restart.bind(this));
 	this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
+
+	this.multiplayer = multiplayer;
+	this.agentMoving = false;
 
 	this.setup();
 }
@@ -56,6 +59,11 @@ GameManager.prototype.setup = function () {
 
 	// Update the actuator
 	this.actuate();
+
+	// Start game if not multiplayer
+	if (!this.multiplayer) {
+		this.agentMove(JSON.stringify(this.serialize()))
+	}
 };
 
 // Set up the initial tiles to start the game with
@@ -132,6 +140,9 @@ GameManager.prototype.move = function (direction, computer = false) {
 	const self = this;
 
 	if (this.isGameTerminated()) return; // Don't do anything if the game's over
+
+	// Tell agent to move again if not multiplayer
+	if (!this.multiplayer) this.agentMove(JSON.stringify(this.serialize()));
 
 	let cell, tile;
 
@@ -289,6 +300,9 @@ GameManager.prototype.positionsEqual = function (first, second) {
 };
 
 GameManager.prototype.agentMove = function (state) {
+	this.agentMoving = true;
+	let gameManager = this;
+
 	const params = {
 		url: 'move',
 		type: 'POST',
@@ -297,7 +311,13 @@ GameManager.prototype.agentMove = function (state) {
 		success: (data) => {
 			data = parseInt(data);
 			console.log(this.directionString(data));
-			this.move(data, true);
+
+			// Wait for animation to finish before moving
+			setTimeout(function () {
+				let moveAgain = !(gameManager.multiplayer || gameManager.isGameTerminated());
+				gameManager.agentMoving = moveAgain;
+				gameManager.move(data, true);
+			}, 500);
 		}
 	};
 
