@@ -3,7 +3,11 @@ const Agent = require('../scripts/agent');
 const router = express.Router();
 
 router.get('/', function(req, res) {
-	res.render('index');
+	res.render('index', {multiplayer: true});
+});
+
+router.get('/computer', function(req, res) {
+	res.render('index', {multiplayer: false})
 });
 
 router.post('/move', function (req, res) {

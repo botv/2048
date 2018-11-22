@@ -1,0 +1,76 @@
+extends layout
+
+block content
+    .container
+        .heading
+            h1.title 2048
+            .scores-container
+                .score-container 0
+                .best-container 0
+        .above-game
+            p.game-intro
+                | Join the numbers and get to the
+                strong 2048 tile!
+            a.restart-button New Game
+        .game-container
+            .game-message
+                p
+                .lower
+                    a.keep-playing-button Keep going
+                    a.retry-button Try again
+            .grid-container
+                .grid-row
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+                .grid-row
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+                .grid-row
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+                .grid-row
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+                    .grid-cell
+            .tile-container
+        p.game-explanation
+            strong.important How to play:
+            |  Use your&nbsp;
+            strong arrow keys
+            |  to move the tiles. When two
+            | &#x9;&#x9;tiles with the same number touch, they&nbsp;
+            strong merge into one!
+        hr
+        p
+            | Created by&nbsp;
+            a(href='https://benbotvinick.com' target='_blank') Ben Botvinick
+            |  and&nbsp;
+            a(href='https://github.com/robertmay2003' target='_blank')
+                | Robert
+                | May
+            | . Inspired by&nbsp;
+            a(href='https://play2048.co' target='_blank') 2048 by Gabirele Cirulli
+            | . View the source&nbsp;
+            a(href='https://github.com/botv/2048' target='_blank') here
+            | .
+    script(src='javascripts/jquery-3.3.1.min.js')
+    script(src='javascripts/bind_polyfill.js')
+    script(src='javascripts/classlist_polyfill.js')
+    script(src='javascripts/animframe_polyfill.js')
+    script(src='javascripts/keyboard_input_manager.js')
+    script(src='javascripts/html_actuator.js')
+    script(src='javascripts/grid.js')
+    script(src='javascripts/tile.js')
+    script(src='javascripts/local_storage_manager.js')
+    script(src='javascripts/game_manager.js')
+    if multiplayer
+        script(src='javascripts/application.js')
+    else
+        script(src='javascripts/computer_application.js')
