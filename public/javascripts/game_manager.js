@@ -192,7 +192,7 @@ GameManager.prototype.move = function (direction, computer = false) {
 		this.actuate();
 
 		if (!computer) {
-			self.agentMove(JSON.stringify(this.grid.serialize()));
+			self.agentMove(JSON.stringify(this.serialize()));
 		}
 	}
 };
@@ -202,9 +202,9 @@ GameManager.prototype.getVector = function (direction) {
 	// Vectors representing tile movement
 	const map = {
 		0: {x: 0, y: -1}, // Up
-		1: {x: 1, y: 0},  // Right
-		2: {x: 0, y: 1},  // Down
-		3: {x: -1, y: 0}   // Left
+		1: {x: 1, y: 0}, // Right
+		2: {x: 0, y: 1}, // Down
+		3: {x: -1, y: 0} // Left
 	};
 
 	return map[direction];

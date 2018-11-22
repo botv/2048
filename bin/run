@@ -1,0 +1,4 @@
+const GameManager = require('../scripts/game_manager');
+
+const gameManager = new GameManager(4);
+gameManager.run(2);
