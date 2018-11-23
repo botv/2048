@@ -1,5 +1,5 @@
 const express = require('express');
-const Agent = require('../scripts/agent');
+const Agent = require('../models/agent');
 const router = express.Router();
 
 router.get('/', function(req, res) {
