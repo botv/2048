@@ -48,7 +48,14 @@ class PolicyNetwork(object):
     	return self.s.run(self.train)
 
     def train_step(self, obs, acts, advantages):
-    	batch_feed = {self.input: obs, self.acts: acts}
+    	batch_feed = {self.input: obs, self.acts: acts, self.advantages: advantages}
+    	self.s.run(self.train, feed_dict = batch_feed)
+
+    def policy_rollout(env,agent):
+    	#Run an episode
+
+    	observation, reward, done = ____, 0, False
+    	obs, acts, rews, 
 
 
 
