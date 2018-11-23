@@ -1,5 +1,5 @@
 const express = require('express');
-const Agent = require('../scripts/agent');
+const Agent = require('../models/agent');
 const router = express.Router();
 
 router.get('/', function(req, res) {
@@ -7,8 +7,8 @@ router.get('/', function(req, res) {
 });
 
 router.post('/move', function (req, res) {
-	const grid = JSON.parse(req.body.grid);
-	const action = Agent.action(grid);
+	const state = JSON.parse(req.body.state);
+	const action = Agent.action(state);
 	res.send(action.toString());
 });
 

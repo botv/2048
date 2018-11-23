@@ -10,8 +10,6 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 	this.inputManager.on('restart', this.restart.bind(this));
 	this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
 
-	this.agentMoving = false;
-
 	this.setup();
 }
 
@@ -134,7 +132,6 @@ GameManager.prototype.move = function (direction, computer = false) {
 	const self = this;
 
 	if (this.isGameTerminated()) return; // Don't do anything if the game's over
-	if (!computer && this.agentMoving) return; // Only execute if agent is not moving
 
 	let cell, tile;
 
@@ -192,7 +189,7 @@ GameManager.prototype.move = function (direction, computer = false) {
 		this.actuate();
 
 		if (!computer) {
-			self.agentMove(JSON.stringify(this.grid.serialize()));
+			self.agentMove(JSON.stringify(this.serialize()));
 		}
 	}
 };
@@ -202,9 +199,9 @@ GameManager.prototype.getVector = function (direction) {
 	// Vectors representing tile movement
 	const map = {
 		0: {x: 0, y: -1}, // Up
-		1: {x: 1, y: 0},  // Right
-		2: {x: 0, y: 1},  // Down
-		3: {x: -1, y: 0}   // Left
+		1: {x: 1, y: 0}, // Right
+		2: {x: 0, y: 1}, // Down
+		3: {x: -1, y: 0} // Left
 	};
 
 	return map[direction];
@@ -291,23 +288,18 @@ GameManager.prototype.positionsEqual = function (first, second) {
 	return first.x === second.x && first.y === second.y;
 };
 
-GameManager.prototype.agentMove = function (grid) {
-	this.agentMoving = true;
-
+GameManager.prototype.agentMove = function (state) {
 	const params = {
 		url: 'move',
 		type: 'POST',
 		dataType: 'text',
-		data: {grid},
+		data: {state},
 		success: (data) => {
 			data = parseInt(data);
 			console.log(this.directionString(data));
 			this.move(data, true);
-			this.agentMoving = false;
 		}
 	};
 
-	setTimeout(function (gameManager = this) {
-		$.ajax(params);
-	}, 500);
+	$.ajax(params);
 };
