@@ -44,7 +44,8 @@ module.exports = class GameManager {
 	run(games) {
 		for (let i = 0; i < games; i++) {
 			do {
-				this.move(Math.floor(Math.random() * 4));
+				const action = this.agent.action(this.serialize());
+				this.move(action);
 			} while (!this.isGameTerminated());
 
 			this.restart();
@@ -64,6 +65,7 @@ module.exports = class GameManager {
 	// Set up the game
 	setup() {
 		this.grid = new Grid(this.size);
+		this.agent = new Agent();
 		this.score = 0;
 		this.over = false;
 		this.won = false;
