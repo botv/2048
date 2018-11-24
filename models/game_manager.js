@@ -48,6 +48,7 @@ module.exports = class GameManager {
 				this.move(action);
 			} while (!this.isGameTerminated());
 
+			console.log(this.getState());
 			this.restart();
 		}
 	};
@@ -241,4 +242,8 @@ module.exports = class GameManager {
 
 		return false;
 	};
+
+	getState() {
+		return this.grid.serialize().cells.flat().map(x => Math.log2(x.value));
+	}
 };
