@@ -48,7 +48,10 @@ module.exports = class GameManager {
 				this.move(action);
 			} while (!this.isGameTerminated());
 
+			console.log(this.serialize());
 			console.log(this.getState());
+			console.log(this.getCumulativeReward());
+
 			this.restart();
 		}
 	};
@@ -243,7 +246,11 @@ module.exports = class GameManager {
 		return false;
 	};
 
+	getCumulativeReward() {
+		return this.grid.sum();
+	}
+
 	getState() {
-		return this.grid.serialize().cells.flat().map(x => Math.log2(x.value));
+		return this.grid.flatten().map(x => x == null ? 0 : Math.log2(x.value));
 	}
 };
