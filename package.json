@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "run": "node ./bin/run"
+    "train": "node ./bin/train"
   },
   "dependencies": {
     "@tensorflow/tfjs-node": "^0.1.21",
