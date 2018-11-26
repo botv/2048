@@ -13,7 +13,7 @@ module.exports = class QLearningAgent {
 	train(games) {
 		const gameManager = new GameManager(4);
 
-		for (let i = 0; i < games; i++) {
+		for (let i = 1; i <= games; i++) {
 			let actions = {};
 
 			do {
@@ -43,7 +43,7 @@ module.exports = class QLearningAgent {
 				this.data[stateString] = tf.tensor1d(weights).softmax().dataSync();
 			}
 
-			console.log('Cumulative reward: ' + cumulativeReward);
+			console.log(`(${i}) Cumulative reward: ${cumulativeReward}`);
 			gameManager.restart();
 		}
 	}
