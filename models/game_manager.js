@@ -1,9 +1,5 @@
-const tf = require('@tensorflow/tfjs');
-require('@tensorflow/tfjs-node');
-
 const Tile = require('./tile');
 const Grid = require('./grid');
-const Agent = require('./agent');
 
 module.exports = class GameManager {
 	constructor(size) {
@@ -12,19 +8,6 @@ module.exports = class GameManager {
 
 		this.setup();
 	}
-
-	static directionString(direction) {
-		switch (direction) {
-			case 0:
-				return 'up';
-			case 1:
-				return 'right';
-			case 2:
-				return 'down';
-			case 3:
-				return 'left';
-		}
-	};
 
 	static positionsEqual(first, second) {
 		return first.x === second.x && first.y === second.y;
@@ -43,22 +26,6 @@ module.exports = class GameManager {
 		return map[direction];
 	}
 
-	// Play specified number of games
-	run(games) {
-		for (let i = 0; i < games; i++) {
-			do {
-				const action = this.agent.action(this.serialize());
-				this.move(action);
-			} while (!this.isGameTerminated());
-
-			console.log(this.serialize());
-			console.log(this.getState());
-			console.log(this.getCumulativeReward());
-
-			this.restart();
-		}
-	};
-
 	// Restart the game
 	restart() {
 		this.setup();
@@ -72,7 +39,6 @@ module.exports = class GameManager {
 	// Set up the game
 	setup() {
 		this.grid = new Grid(this.size);
-		this.agent = new Agent();
 		this.score = 0;
 		this.over = false;
 		this.won = false;
@@ -255,39 +221,5 @@ module.exports = class GameManager {
 
 	getState() {
 		return this.grid.flatten().map(x => x == null ? 0 : Math.log2(x.value));
-	}
-
-	train(games) {
-		let data = {};
-
-		for (let i = 0; i < games; i++) {
-			do {
-				// initialize variables
-				const stateString = JSON.stringify(this.getState());
-				const cumulativeReward1 = this.getCumulativeReward();
-
-				// get current weights for state
-				let weights;
-				if (!data[stateString]) weights = tf.ones([4]).softmax().dataSync();
-				else weights = data[stateString];
-
-				// perform action
-				const action = tf.multinomial(tf.log(weights), 1).dataSync()[0];
-				this.move(action);
-
-				// get reward of action
-				const cumulativeReward2 = this.getCumulativeReward();
-				const reward = cumulativeReward2 - cumulativeReward1;
-
-				// update weights
-				weights[action] += reward;
-				data[stateString] = tf.tensor1d(weights).softmax().dataSync();
-			} while (!this.isGameTerminated());
-
-			console.log('Cumulative reward: ' + this.getCumulativeReward());
-			this.restart();
-		}
-
-		console.log(data);
 	}
 };

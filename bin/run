@@ -1,4 +1,5 @@
-const GameManager = require('../models/game_manager');
+const SoftmaxAgent = require('../models/softmax_agent');
 
-const gameManager = new GameManager(4);
-gameManager.train(1);
+const agent = new SoftmaxAgent(4);
+agent.train(30);
+console.log(agent.data);
