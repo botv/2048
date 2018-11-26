@@ -1,5 +1,5 @@
-const SoftmaxAgent = require('../models/softmax_agent');
+const QLearningAgent = require('../models/q_learning_agent');
 
-const agent = new SoftmaxAgent(4);
+const agent = new QLearningAgent();
 agent.train(30);
-console.log(agent.data);
+agent.summarize();
