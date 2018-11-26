@@ -62,7 +62,7 @@ module.exports = class QLearningAgent {
 		// convert stateString to a tensor
 		const state = tf.tensor2d(JSON.parse(stateString), [4, 4]);
 
-		// define rotation matrices
+		// define rotation matrices (these do not work)
 		const r0 = tf.tensor2d([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]);
 		const r90 = tf.tensor2d([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, 1, 0], [0, 0, 0, -1]]);
 		const r180 = tf.tensor2d([[-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, -1]]);
