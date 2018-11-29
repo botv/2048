@@ -1,6 +1,5 @@
 const Tile = require('./tile');
 const Grid = require('./grid');
-const Agent = require('./agent');
 
 module.exports = class GameManager {
 	constructor(size) {
@@ -9,19 +8,6 @@ module.exports = class GameManager {
 
 		this.setup();
 	}
-
-	static directionString(direction) {
-		switch (direction) {
-			case 0:
-				return 'up';
-			case 1:
-				return 'right';
-			case 2:
-				return 'down';
-			case 3:
-				return 'left';
-		}
-	};
 
 	static positionsEqual(first, second) {
 		return first.x === second.x && first.y === second.y;
@@ -40,19 +26,6 @@ module.exports = class GameManager {
 		return map[direction];
 	}
 
-	// Play specified number of games
-	run(games) {
-		for (let i = 0; i < games; i++) {
-			do {
-				const action = this.agent.action(this.serialize());
-				this.move(action);
-			} while (!this.isGameTerminated());
-
-			console.log(this.getState());
-			this.restart();
-		}
-	};
-
 	// Restart the game
 	restart() {
 		this.setup();
@@ -66,7 +39,6 @@ module.exports = class GameManager {
 	// Set up the game
 	setup() {
 		this.grid = new Grid(this.size);
-		this.agent = new Agent();
 		this.score = 0;
 		this.over = false;
 		this.won = false;
@@ -243,7 +215,11 @@ module.exports = class GameManager {
 		return false;
 	};
 
+	getCumulativeReward() {
+		return this.grid.sum();
+	}
+
 	getState() {
-		return this.grid.serialize().cells.flat().map(x => Math.log2(x.value));
+		return this.grid.flatten().map(x => x == null ? 0 : Math.log2(x.value));
 	}
 };

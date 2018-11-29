@@ -1,0 +1,5 @@
+const QLearningAgent = require('../models/q_learning_agent');
+
+const agent = new QLearningAgent();
+agent.train(2000);
+agent.summarize();

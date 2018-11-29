@@ -118,4 +118,12 @@ module.exports = class Grid {
 			cells: cellState
 		};
 	};
+
+	flatten() {
+		return this.serialize().cells.flat();
+	}
+
+	sum() {
+		return this.serialize().cells.flat().filter(Boolean).map(x => x.value).reduce((a, b) => a + b);
+	}
 };

@@ -1,4 +1,0 @@
-const GameManager = require('../models/game_manager');
-
-const gameManager = new GameManager(4);
-gameManager.run(1);
