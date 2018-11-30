@@ -40,6 +40,8 @@ module.exports = class QLearningAgent {
 				// get current weights for state
 				let weights = this.getCurrentWeights(stateString);
 				weights[action] += adjustedCumulativeReward;
+
+				// update weights
 				this.data[stateString] = tf.tensor1d(weights).softmax().dataSync();
 			}
 
@@ -57,16 +59,25 @@ module.exports = class QLearningAgent {
 		return weights;
 	}
 
-	// get state string rotated 0, 90, 180 and 270 degrees.
-	getRotatedStateString(stateString) {
+	// get state string rotated 0, 90, 180 and 270 degrees
+	getRotatedStateStrings(stateString) {
 		// convert stateString to a tensor
 		const state = tf.tensor2d(JSON.parse(stateString), [4, 4]);
 
-		// define rotation matrices (these do not work)
-		const r0 = tf.tensor2d([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]);
-		const r90 = tf.tensor2d([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, 1, 0], [0, 0, 0, -1]]);
-		const r180 = tf.tensor2d([[-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, -1]]);
-		const r270 = tf.tensor2d([[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]]);
+		// rotate matrix by some multiple of 90 degrees
+		function rotate(matrix, degrees) {
+			for (let i = 0; i < degrees / 90; i++) {
+				matrix = matrix.reverse(1).transpose();
+			}
+
+			return matrix;
+		}
+
+		// define rotation matrices
+		const r0 = rotate(state, 0);
+		const r90 = rotate(state, 90);
+		const r180 = rotate(state, 180);
+		const r270 = rotate(state, 270);
 
 		// change tensor into string
 		function tensorToString(tensor) {
@@ -75,10 +86,10 @@ module.exports = class QLearningAgent {
 
 		// return rotated state strings
 		return [
-			tensorToString(tf.mul(state, r0)),
-			tensorToString(tf.mul(state, r90)),
-			tensorToString(tf.mul(state, r180)),
-			tensorToString(tf.mul(state, r270))
+			tensorToString(r0),
+			tensorToString(r90),
+			tensorToString(r180),
+			tensorToString(r270)
 		];
 	}
 
