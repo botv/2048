@@ -73,7 +73,7 @@ module.exports = class QLearningAgent {
 			return matrix;
 		}
 
-		// define rotation matrices
+		// get rotated matrices
 		const r0 = rotate(state, 0);
 		const r90 = rotate(state, 90);
 		const r180 = rotate(state, 180);
