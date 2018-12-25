@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const QLearningAgent = require('../models/q_learning_agent');
 
 const agent = new QLearningAgent();
