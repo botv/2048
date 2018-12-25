@@ -7,7 +7,7 @@ const Grid = require('../models/grid');
 const Tile = require('../models/tile');
 
 module.exports = class MonteCarloTreeSearcher {
-	constructor(agent, depth = 10, traversals = 50) {
+	constructor(agent, depth = 5, traversals = 30) {
 		this.depth = depth;
 		this.traversals = traversals;
 
@@ -21,7 +21,7 @@ module.exports = class MonteCarloTreeSearcher {
 
 		// What to console.log during development
 		this.logProcess = false;
-		this.logMoves = true;
+		this.logMoves = false;
 	}
 
 	// Search from state

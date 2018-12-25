@@ -5,7 +5,7 @@ const GameManager = require('../models/game_manager');
 const MonteCarloTreeSearcher = require('../models/monte_carlo_tree_searcher');
 
 module.exports = class MCTSAgent {
-	constructor(learningRate = 0.001, depth = 10, traversals = 150) {
+	constructor(learningRate = 0.001, depth = 10, traversals = 30) {
 		this.data = {};
 		this.learningRate = learningRate;
 		this.mcts = new MonteCarloTreeSearcher(this, depth, traversals);
@@ -24,7 +24,7 @@ module.exports = class MCTSAgent {
 
 				// get action
 				let weights = this.mcts.getCurrentWeights(gameManager.getState());
-				console.log(weights);
+				// console.log(weights);
 				const action = weights.indexOf(Math.max(...weights));
 				actions[stateString] = action;
 				gameManager.move(action);
