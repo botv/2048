@@ -3,5 +3,5 @@
 const QLearningAgent = require('../models/q_learning_agent');
 
 const agent = new QLearningAgent();
-agent.train(2000);
-agent.summarize();
+const rotations = agent.getRotatedStateStrings('[1,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0]');
+console.log(rotations);

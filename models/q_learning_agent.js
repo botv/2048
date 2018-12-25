@@ -9,7 +9,7 @@ module.exports = class QLearningAgent {
 		this.learningRate = learningRate;
 	}
 
-	// train agent with certain amount of games
+	// Train agent with certain amount of games
 	train(games) {
 		const gameManager = new GameManager(4);
 
@@ -17,29 +17,31 @@ module.exports = class QLearningAgent {
 			let actions = {};
 
 			do {
-				// initialize variables
+				// Initialize variables
 				const stateString = JSON.stringify(gameManager.getState());
 
-				// get current weights for state
+				// Get current weights for state
 				let weights = this.getCurrentWeights(stateString);
 
-				// perform action
+				// Perform action
 				const action = tf.multinomial(tf.log(weights), 1).dataSync()[0];
 				actions[stateString] = action;
 				gameManager.move(action);
 			} while (!gameManager.isGameTerminated());
 
-			// get cumulative reward
+			// Get cumulative reward
 			const cumulativeReward = gameManager.getCumulativeReward();
 			const adjustedCumulativeReward = cumulativeReward * this.learningRate;
 
-			// update weights
+			// Update weights
 			for (let stateString in actions) {
 				const action = actions[stateString];
 
-				// get current weights for state
+				// Get current weights for state
 				let weights = this.getCurrentWeights(stateString);
 				weights[action] += adjustedCumulativeReward;
+
+				// Update weights
 				this.data[stateString] = tf.tensor1d(weights).softmax().dataSync();
 			}
 
@@ -48,7 +50,7 @@ module.exports = class QLearningAgent {
 		}
 	}
 
-	// get current weights for state
+	// Get current weights for state
 	getCurrentWeights(stateString) {
 		let weights;
 		if (!this.data[stateString]) weights = tf.ones([4]).softmax().dataSync();
@@ -57,32 +59,41 @@ module.exports = class QLearningAgent {
 		return weights;
 	}
 
-	// get state string rotated 0, 90, 180 and 270 degrees.
-	getRotatedStateString(stateString) {
-		// convert stateString to a tensor
+	// Get state string rotated 0, 90, 180 and 270 degrees
+	getRotatedStateStrings(stateString) {
+		// Convert stateString to a tensor
 		const state = tf.tensor2d(JSON.parse(stateString), [4, 4]);
 
-		// define rotation matrices (these do not work)
-		const r0 = tf.tensor2d([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]);
-		const r90 = tf.tensor2d([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, 1, 0], [0, 0, 0, -1]]);
-		const r180 = tf.tensor2d([[-1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, -1]]);
-		const r270 = tf.tensor2d([[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]]);
+		// Rotate matrix by some multiple of 90 degrees
+		function rotate(matrix, degrees) {
+			for (let i = 0; i < degrees / 90; i++) {
+				matrix = matrix.reverse(1).transpose();
+			}
 
-		// change tensor into string
+			return matrix;
+		}
+
+		// Get rotated matrices
+		const r0 = rotate(state, 0);
+		const r90 = rotate(state, 90);
+		const r180 = rotate(state, 180);
+		const r270 = rotate(state, 270);
+
+		// Change tensor into string
 		function tensorToString(tensor) {
 			return JSON.stringify(Array.from(tensor.dataSync()).flat());
 		}
 
-		// return rotated state strings
+		// Return rotated state strings
 		return [
-			tensorToString(tf.mul(state, r0)),
-			tensorToString(tf.mul(state, r90)),
-			tensorToString(tf.mul(state, r180)),
-			tensorToString(tf.mul(state, r270))
+			tensorToString(r0),
+			tensorToString(r90),
+			tensorToString(r180),
+			tensorToString(r270)
 		];
 	}
 
-	// summarize training by logging states that were adjusted more than once
+	// Summarize training by logging states that were adjusted more than once
 	summarize() {
 		for (let stateString in this.data) {
 			if (this.data[stateString].length < Array.from(new Set(this.data[stateString])).length + 2) {

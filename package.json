@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "test": "node ./bin/test",
     "start": "node ./bin/www",
     "train": "node ./bin/train",
     "mcts-train": "node ./bin/mcts_train"
