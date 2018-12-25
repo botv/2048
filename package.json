@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "train": "node ./bin/train"
+    "train": "node ./bin/train",
+    "mcts-train": "node ./bin/mcts_train"
   },
   "dependencies": {
     "@tensorflow/tfjs": "latest",

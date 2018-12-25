@@ -222,4 +222,65 @@ module.exports = class GameManager {
 	getState() {
 		return this.grid.flatten().map(x => x == null ? 0 : Math.log2(x.value));
 	}
+
+	static logState(state) {
+		for (let y = 0; y < 4; y++) {
+			let row = [];
+			for (let x = 0; x < 4; x++) {
+				row.push(state[x * 4 + y]);
+			}
+			console.log(row);
+		}
+	}
+
+	setState(state) {
+		const cells = [];
+		for (let x = 0; x < 4; x++) {
+			let row = [];
+			for (let y = 0; y < 4; y++) {
+				const position = {
+					"x": x,
+					"y": y
+				};
+				const value = state[x*4 + y];
+				row.push(value !== 0 ? new Tile(position, Math.pow(2, value)).serialize() : null);
+			}
+			cells.push(row);
+		}
+		this.grid = new Grid(4, cells);
+	}
+
+	directionsAvailable() {
+		const self = this;
+
+		let tile;
+		let moves = [];
+
+		for (let x = 0; x < this.size && moves.length < 4; x++) {
+			for (let y = 0; y < this.size && moves.length < 4; y++) {
+				tile = this.grid.cellContent({x: x, y: y});
+
+				if (tile) {
+					for (let direction = 0; direction < 4; direction++) {
+						// No use checking if direction is already known to be possible
+						if (!moves.includes(direction)) {
+							const vector = GameManager.getVector(direction);
+							const cell = {x: x + vector.x, y: y + vector.y};
+
+							const other = self.grid.cellContent(cell, true);
+							console.log(other);
+
+							if (other && (other.value === tile.value || other.value === 0)) {
+								// These two tiles can be merged, add the direction
+								moves.push(direction)
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return moves;
+	}
+
 };

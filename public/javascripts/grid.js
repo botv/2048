@@ -115,3 +115,7 @@ Grid.prototype.serialize = function () {
 		cells: cellState
 	};
 };
+
+Grid.prototype.flatten = function () {
+	return this.serialize().cells.flat();
+};

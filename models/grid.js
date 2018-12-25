@@ -80,9 +80,9 @@ module.exports = class Grid {
 		return !!this.cellContent(cell);
 	};
 
-	cellContent(cell) {
+	cellContent(cell, inclusive=false) {
 		if (this.withinBounds(cell)) {
-			return this.cells[cell.x][cell.y];
+			return inclusive ? this.cells[cell.x][cell.y] || new Tile(cell, 0) : this.cells[cell.x][cell.y];
 		} else {
 			return null;
 		}

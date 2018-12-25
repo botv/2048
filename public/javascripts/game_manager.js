@@ -191,6 +191,8 @@ GameManager.prototype.move = function (direction, computer = false) {
 		if (!computer) {
 			self.agentMove(JSON.stringify(this.serialize()));
 		}
+
+		this.logState(this.getState())
 	}
 };
 
@@ -302,4 +304,18 @@ GameManager.prototype.agentMove = function (state) {
 	};
 
 	$.ajax(params);
+};
+
+GameManager.prototype.logState = function (state) {
+	for (let y = 0; y < 4; y++) {
+		let row = [];
+		for (let x = 0; x < 4; x++) {
+			row.push(state[x * 4 + y]);
+		}
+		console.log(row);
+	}
+};
+
+GameManager.prototype.getState = function () {
+	return this.grid.flatten().map(x => x == null ? 0 : Math.log2(x.value));
 };

@@ -1,0 +1,5 @@
+const MCTSAgent = require('../models/mcts_agent');
+
+const agent = new MCTSAgent();
+agent.train(2000);
+agent.summarize();
