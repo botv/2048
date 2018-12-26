@@ -239,8 +239,8 @@ module.exports = class GameManager {
 			let row = [];
 			for (let y = 0; y < 4; y++) {
 				const position = {
-					"x": x,
-					"y": y
+					'x': x,
+					'y': y
 				};
 				const value = state[x*4 + y];
 				row.push(value !== 0 ? new Tile(position, Math.pow(2, value)).serialize() : null);
@@ -268,7 +268,6 @@ module.exports = class GameManager {
 							const cell = {x: x + vector.x, y: y + vector.y};
 
 							const other = self.grid.cellContent(cell, true);
-							console.log(other);
 
 							if (other && (other.value === tile.value || other.value === 0)) {
 								// These two tiles can be merged, add the direction

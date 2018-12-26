@@ -46,7 +46,7 @@ module.exports = class MonteCarloTreeSearcher {
 			weights.push(this.root.children[i].numberOfVisits / this.traversals)
 		}
 
-		if (this.logProcess) console.log("Constructed weights: " + weights);
+		if (this.logProcess) console.log('Constructed weights: ' + weights);
 
 		return weights;
 
@@ -54,7 +54,7 @@ module.exports = class MonteCarloTreeSearcher {
 
 	// Single tree traversal
 	traverse() {
-		if (this.logProcess) console.log("Beginning traversal from state " + this.state + ": \n");
+		if (this.logProcess) console.log('Beginning traversal from state ' + this.state + ': \n');
 
 		// Start at root
 		let currentNode = this.root;
@@ -70,22 +70,27 @@ module.exports = class MonteCarloTreeSearcher {
 		do {
 			states.push(currentNode);
 
-			if (this.logProcess) console.log("Evaluating node: root" + states.slice(1).map((a) => "->" + a.action).join(""));
+			if (this.logProcess) console.log('Evaluating node: root' + states.slice(1).map((a) => '->' + a.action).join(''));
 			if (this.logMoves) {
-				console.log("Previous state: ");
+				console.log('Previous state: ');
 				if (depth !== 0) {
 					GameManager.logState(currentNode.state);
-					console.log("directions: " + simGameManager.directionsAvailable());
+					console.log('directions: ' + simGameManager.directionsAvailable());
 				}
-				else console.log("none");
+				else console.log('none');
 			}
 
 			if (currentNode.numberOfVisits === 0) {
 				// If node has never been visited before, rollout (choose randomly)
 				// 0: up, 1: right, 2: down, 3: left
-				if (this.logProcess) console.log("rollout");
+				if (this.logProcess) console.log('rollout');
 
-				let actions = Array.apply(null, {length: 4}).map(Number.call, Number);
+				// Only consider available moves
+				let actions = simGameManager.directionsAvailable();
+				if (actions.length === 0) {
+					// Game should be over... if this code executes there could be an error
+					console.log('ERROR: game should be over, no available moves');
+				}
 				let action = actions[Math.floor(Math.random()*actions.length)];
 
 				// Set next node's state to current state; move current node's state (previous state) by current node's action
@@ -105,10 +110,10 @@ module.exports = class MonteCarloTreeSearcher {
 
 				let nextNode = new StateActionNode(this, currentState, action, probability);
 				if (this.logMoves) {
-					console.log("Action: " + currentNode.action);
-					console.log("Current state: ");
+					console.log('Action: ' + currentNode.action);
+					console.log('Current state: ');
 					GameManager.logState(currentState);
-					console.log("");
+					console.log('');
 				}
 
 				currentNode.numberOfVisits++;
@@ -118,7 +123,7 @@ module.exports = class MonteCarloTreeSearcher {
 			} else if (currentNode.children.length < 4) {
 				// If node has been visited and not all children are present, expand
 				// add all 4 child nodes to children
-				if (this.logProcess) console.log("construct children");
+				if (this.logProcess) console.log('construct children');
 
 				for (let i = 0; i < 4; i++) {
 					// 0: up, 1: right, 2: down, 3: left
@@ -160,10 +165,10 @@ module.exports = class MonteCarloTreeSearcher {
 				}
 
 				if (this.logMoves) {
-					console.log("Action: " + currentNode.action);
-					console.log("Current state: ");
+					console.log('Action: ' + currentNode.action);
+					console.log('Current state: ');
 					GameManager.logState(nextNode.state);
-					console.log("");
+					console.log('');
 				}
 
 				currentNode.numberOfVisits++;
@@ -200,10 +205,10 @@ module.exports = class MonteCarloTreeSearcher {
 				}
 
 				if (this.logMoves) {
-					console.log("Action: " + currentNode.action);
-					console.log("Current state: ");
+					console.log('Action: ' + currentNode.action);
+					console.log('Current state: ');
 					GameManager.logState(nextNode.state);
-					console.log("");
+					console.log('');
 				}
 
 				currentNode.numberOfVisits++;
@@ -222,8 +227,8 @@ module.exports = class MonteCarloTreeSearcher {
 
 		let reward = currentNode.reward(simGameManager);
 
-		if (this.logProcess) console.log("Traversal complete at node root" + states.slice(1).map((a) => "->" + a.action).join(""));
-		if (this.logProcess) console.log("Reward: " + reward + "\n");
+		if (this.logProcess) console.log('Traversal complete at node root' + states.slice(1).map((a) => '->' + a.action).join(''));
+		if (this.logProcess) console.log('Reward: ' + reward + '\n');
 
 		for (let i = states.length - 1; i > 0; i--) {
 			let node = states[i];
@@ -241,24 +246,38 @@ module.exports = class MonteCarloTreeSearcher {
 		let nextNodeWeight = -1;
 		let i = 0;
 
-		if (this.logProcess) console.log("Selecting action from: " + nodeArray.map((a) => a.action + ": " + a.value + (a.probability / (1 + a.numberOfVisits))));
+		if (this.logProcess) console.log('Selecting action from: ' + nodeArray.map((a) => a.action + ': ' + a.value + (a.probability / (1 + a.numberOfVisits))));
+
+		// Get all possible moves; the node.state of all nodes in the array should be the same, use the first
+		let simGameManager = new GameManager(4);
+		simGameManager.setState(nodeArray[0].state);
+		const moves = simGameManager.directionsAvailable();
+		if (moves.length === 0) {
+			// The game should be over... if this executes there could be an issue
+			console.log('ERROR: game should be over, no available moves');
+			// Set moves to full array to prevent break
+			moves = [0, 1, 2, 3]
+		}
 
 		for (i; i < nodeArray.length; i++) {
-			let node = nodeArray[i];
+			// Only consider state if direction is available
+			if (moves.includes(i)) {
+				let node = nodeArray[i];
 
-			let nodeWeight = node.value + (node.probability / (1 + node.numberOfVisits));
+				let nodeWeight = node.value + (node.probability / (1 + node.numberOfVisits));
 
-			if (isNaN(node.value)) {
-				if (this.logProcess) console.log("node.rewards: " + node.rewards)
-			}
+				if (isNaN(node.value)) {
+					if (this.logProcess) console.log('node.rewards: ' + node.rewards)
+				}
 
-			if (nodeWeight > nextNodeWeight) {
-				nextNode = i;
-				nextNodeWeight = nodeWeight;
+				if (nodeWeight > nextNodeWeight) {
+					nextNode = i;
+					nextNodeWeight = nodeWeight;
+				}
 			}
 		}
 
-		if (this.logProcess) console.log("Selected " + nextNode);
+		if (this.logProcess) console.log('Selected ' + nextNode);
 
 		return {
 			index: nextNode,
