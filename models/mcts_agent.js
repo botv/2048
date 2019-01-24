@@ -11,7 +11,7 @@ module.exports = class MCTSAgent {
 		this.mcts = new MonteCarloTreeSearcher(this, depth, traversals);
 	}
 
-	// train agent with certain amount of games
+	// q_learning_train agent with certain amount of games
 	train(games) {
 		const gameManager = new GameManager(4);
 
@@ -59,8 +59,6 @@ module.exports = class MCTSAgent {
 	}
 
 	neuralNetPlaceholder(state) {
-		// Use q learning weights until neural net is complete, then use output of NN
-
 		// initialize variables
 		const stateString = JSON.stringify(state);
 

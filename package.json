@@ -5,7 +5,7 @@
   "scripts": {
     "test": "node ./bin/test",
     "start": "node ./bin/www",
-    "train": "node ./bin/train",
+    "q-learning-train": "node ./bin/q_learning_train",
     "mcts-train": "node ./bin/mcts_train"
   },
   "dependencies": {
