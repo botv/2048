@@ -73,12 +73,11 @@ def train():
             with tf.GradientTape() as tape:
                 logits = network(state)
                 action_dist = logits.numpy()
-                print(action_dist)
                 action = np.random.choice(action_dist[0],p=action_dist[0])
-                print(action)
                 action = np.argmax(action_dist == action)
                 loss = loss_object([action],logits)
             state, reward, done = g.step(action)
+            print(done)
             rollout_score += reward
             grads = tape.gradient(loss,network.trainable_variables)
             if done: reward-=10
