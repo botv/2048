@@ -31,7 +31,7 @@ compute_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
 rollOuts = 10000
-updateOccurence = 100
+updateOccurence = 50 
 g = game.Game()
 
 optimizer = tf.keras.optimizers.Adam()
@@ -59,7 +59,6 @@ def train():
 
 
     for e in range(rollOuts):
-        print(e)
         g.reset()
 
 
@@ -77,7 +76,6 @@ def train():
                 action = np.argmax(action_dist == action)
                 loss = loss_object([action],logits)
             state, reward, done = g.step(action)
-            print(done)
             rollout_score += reward
             grads = tape.gradient(loss,network.trainable_variables)
             if done: reward-=10
