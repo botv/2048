@@ -22,6 +22,13 @@ class Network(tf.keras.Model):
 
 network = Network(32, 64, 4)
 
+network = tf.keras.Sequential()
+network.add(tf.keras.layers.Dense(32, input_dim = 16, activation='relu'))
+network.add(tf.keras.layers.Dense(4, activation = "softmax"))
+network.build()
+optimizer = tf.keras.optimizers.Adam(learning_rate = 0.01)
+compute_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
 
 rollOuts = 10000
 updateOccurence = 100
@@ -45,13 +52,14 @@ def discountRewards(reward, gamma = 0.8):
 def getTrainable():
     return network.trainable_variables
 
-
 def train():
-    gradBuffer = getTrainable()
+    gradBuffer = network.trainable_variables
     for ix,grad in enumerate(gradBuffer):
       gradBuffer[ix] = grad * 0
 
+
     for e in range(rollOuts):
+        print(e)
         g.reset()
 
 
@@ -65,26 +73,26 @@ def train():
             with tf.GradientTape() as tape:
                 logits = network(state)
                 action_dist = logits.numpy()
+                print(action_dist)
                 action = np.random.choice(action_dist[0],p=action_dist[0])
+                print(action)
                 action = np.argmax(action_dist == action)
                 loss = loss_object([action],logits)
-            grads = tape.gradient(loss,getTrainable())
             state, reward, done = g.step(action)
             rollout_score += reward
+            grads = tape.gradient(loss,network.trainable_variables)
             if done: reward-=10
             rollout_mem.append([grads, reward])
 
         scores.append(rollout_score)
         rollout_mem = np.array(rollout_mem)
         rollout_mem[:,1] = discountRewards(rollout_mem[:,1])
-
         for grads, reward in rollout_mem:
             for ix, grad in enumerate(grads):
-                print(len(gradBuffer), 'grad')
                 gradBuffer[ix] += grad * reward
 
         if e % updateOccurence == 0:
-            optimizer.apply_gradients(zip(gradBuffer, getTrainable()))
+            optimizer.apply_gradients(zip(gradBuffer, network.trainable_variables))
             for i, grad in enumerate(gradBuffer):
                 gradBuffer[i] = grad * 0
 
