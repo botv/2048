@@ -31,7 +31,7 @@ compute_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
 rollOuts = 10000
-updateOccurence = 50 
+updateOccurence = 50
 g = game.Game()
 
 optimizer = tf.keras.optimizers.Adam()
@@ -52,6 +52,14 @@ def discountRewards(reward, gamma = 0.8):
 def getTrainable():
     return network.trainable_variables
 
+def getAction(action_dist, possible_actions):
+    action_dist = [action_dist[i] for i in possible_actions]
+    action_sum = sum(action_dist)
+    action_prob = [prob / action_sum for prob in action_dist]
+    action = np.random.choice(action_dist,p=action_prob)
+    return action
+
+
 def train():
     gradBuffer = network.trainable_variables
     for ix,grad in enumerate(gradBuffer):
@@ -60,19 +68,17 @@ def train():
 
     for e in range(rollOuts):
         g.reset()
-
-
         rollout_mem = []
         rollout_score = 0
         done = False
 
         while not done:
             state = g.getState()
-
+            possibleActions = g.getPossible()
             with tf.GradientTape() as tape:
                 logits = network(state)
                 action_dist = logits.numpy()
-                action = np.random.choice(action_dist[0],p=action_dist[0])
+                action = getAction(action_dist[0], possibleActions)
                 action = np.argmax(action_dist == action)
                 loss = loss_object([action],logits)
             state, reward, done = g.step(action)

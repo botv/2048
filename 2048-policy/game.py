@@ -1,5 +1,6 @@
 import random
 import math
+import copy
 import numpy as np
 
 
@@ -54,6 +55,21 @@ class Game:
         self.randomInsert()
 
 
+    def canMoveUp(self):
+        testState = copy.deepcopy(self.board)
+        for col in range(len(testState[0])):
+            colReal = []
+            for r, row in enumerate(testState):
+                colReal.append(row[col])
+            replace = self.merge(colReal)
+            for i in range(len(testState)):
+                testState[i][col] = replace[i]
+        if testState == self.board:
+            return False
+        else:
+            return True
+
+
     def moveDown(self):
         for col in range(len(self.board[0])):
             colReal = []
@@ -66,6 +82,22 @@ class Game:
         self.randomInsert()
 
 
+    def canMoveDown(self):
+        testState = copy.deepcopy(self.board)
+        for col in range(len(testState[0])):
+            colReal = []
+            for r, row in enumerate(testState):
+                colReal.append(row[col])
+            replace = self.merge(colReal)
+            replace = replace[::-1]
+            for i in range(len(testState)):
+                testState[i][col] = replace[i]
+        if testState == self.board:
+            return False
+        else:
+            return True
+
+
     def moveRight(self):
         for i, row in enumerate(self.board):
             replace = self.merge(row)
@@ -74,11 +106,47 @@ class Game:
         self.randomInsert()
 
 
+    def canMoveRight(self):
+        testState = self.board.copy()
+        for i, row in enumerate(testState):
+            replace = self.merge(row)
+            replace = replace[::-1]
+            testState[i] = replace
+        if testState == self.board:
+            return False
+        else:
+            return True
+
+
     def moveLeft(self):
         for i, row in enumerate(self.board):
             replace = self.merge(row)
             self.board[i] = replace
         self.randomInsert()
+
+
+    def canMoveLeft(self):
+        testState = self.board.copy()
+        for i, row in enumerate(testState):
+            replace = self.merge(row)
+            testState[i] = replace
+        if testState == self.board:
+            return False
+        else:
+            return True
+
+
+    def getPossible(self):
+        possibleActions = []
+        if self.canMoveUp() == True:
+            possibleActions.append(0)
+        if self.canMoveDown() == True:
+            possibleActions.append(1)
+        if self.canMoveRight() == True:
+            possibleActions.append(2)
+        if self.canMoveLeft() == True:
+            possibleActions.append(3)
+        return possibleActions
 
 
     def merge(self, nums):
@@ -118,6 +186,7 @@ class Game:
                 else:
                     state.append(math.log(element, 2))
         return np.reshape(np.asarray(state), (1,len(self.board)**2))
+
 
     def step(self, action):
         if action == 0:
