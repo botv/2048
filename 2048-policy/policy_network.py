@@ -88,6 +88,10 @@ def train():
             if done: reward-=10
             rollout_mem.append([grads, reward])
 
+        print('****************')
+        for row in g.board:
+            print(row)
+        print('****************')
         scores.append(rollout_score)
         rollout_mem = np.array(rollout_mem)
         rollout_mem[:,1] = discountRewards(rollout_mem[:,1])
