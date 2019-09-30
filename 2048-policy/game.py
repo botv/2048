@@ -16,6 +16,7 @@ class Game:
             secondCol = random.randint(0,len(self.board[0])-1)
         self.board[firstRow][firstCol] = 2
         self.board[secondRow][secondCol] = 2
+        self.score = 0
 
     def randomInsert(self):
         possibleCoords = []
@@ -49,7 +50,7 @@ class Game:
             colReal = []
             for r, row in enumerate(self.board):
                 colReal.append(row[col])
-            replace = self.merge(colReal)
+            replace = self.merge(colReal, True)
             for i in range(len(self.board)):
                 self.board[i][col] = replace[i]
         self.randomInsert()
@@ -61,7 +62,7 @@ class Game:
             colReal = []
             for r, row in enumerate(testState):
                 colReal.append(row[col])
-            replace = self.merge(colReal)
+            replace = self.merge(colReal, False)
             for i in range(len(testState)):
                 testState[i][col] = replace[i]
         if testState == self.board:
@@ -75,7 +76,7 @@ class Game:
             colReal = []
             for r, row in enumerate(self.board):
                 colReal.append(row[col])
-            replace = self.merge(colReal)
+            replace = self.merge(colReal, True)
             replace = replace[::-1]
             for i in range(len(self.board)):
                 self.board[i][col] = replace[i]
@@ -88,7 +89,7 @@ class Game:
             colReal = []
             for r, row in enumerate(testState):
                 colReal.append(row[col])
-            replace = self.merge(colReal)
+            replace = self.merge(colReal, False)
             replace = replace[::-1]
             for i in range(len(testState)):
                 testState[i][col] = replace[i]
@@ -100,7 +101,7 @@ class Game:
 
     def moveRight(self):
         for i, row in enumerate(self.board):
-            replace = self.merge(row)
+            replace = self.merge(row, True)
             replace = replace[::-1]
             self.board[i] = replace
         self.randomInsert()
@@ -109,7 +110,7 @@ class Game:
     def canMoveRight(self):
         testState = self.board.copy()
         for i, row in enumerate(testState):
-            replace = self.merge(row)
+            replace = self.merge(row, False)
             replace = replace[::-1]
             testState[i] = replace
         if testState == self.board:
@@ -120,7 +121,7 @@ class Game:
 
     def moveLeft(self):
         for i, row in enumerate(self.board):
-            replace = self.merge(row)
+            replace = self.merge(row, True)
             self.board[i] = replace
         self.randomInsert()
 
@@ -128,7 +129,7 @@ class Game:
     def canMoveLeft(self):
         testState = self.board.copy()
         for i, row in enumerate(testState):
-            replace = self.merge(row)
+            replace = self.merge(row, False)
             testState[i] = replace
         if testState == self.board:
             return False
@@ -149,7 +150,7 @@ class Game:
         return possibleActions
 
 
-    def merge(self, nums):
+    def merge(self, nums, acting):
         prev = None
         store = []
         for next_ in nums:
@@ -159,6 +160,8 @@ class Game:
                 prev = next_
             elif prev == next_:
                 store.append(prev + next_)
+                if acting:
+                    self.score += math.log(prev + next_, 2)
                 prev = None
             else:
                 store.append(prev)
@@ -197,4 +200,4 @@ class Game:
             self.moveRight()
         else:
             self.moveLeft()
-        return self.getState(), self.getReward(), self.checkGameActive()
+        return self.getState(), self.checkGameActive()

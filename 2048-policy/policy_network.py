@@ -75,6 +75,7 @@ def train():
 
         while not done:
             state = g.getState()
+            prevScore = g.score
             possibleActions = g.getPossible()
             with tf.GradientTape() as tape:
                 logits = network(state)
@@ -82,17 +83,13 @@ def train():
                 action = getAction(action_dist[0], possibleActions)
                 action = np.argmax(action_dist == action)
                 loss = loss_object([action],logits)
-            state, reward, done = g.step(action)
-            rollout_score += reward
+            state, done = g.step(action)
             grads = tape.gradient(loss,network.trainable_variables)
+            reward = g.score - prevScore
             if done: reward-=10
             rollout_mem.append([grads, reward])
 
-        print('****************')
-        for row in g.board:
-            print(row)
-        print('****************')
-        scores.append(rollout_score)
+        scores.append(g.score)
         rollout_mem = np.array(rollout_mem)
         rollout_mem[:,1] = discountRewards(rollout_mem[:,1])
         for grads, reward in rollout_mem:
