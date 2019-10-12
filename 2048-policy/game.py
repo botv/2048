@@ -192,6 +192,7 @@ class Game:
 
     def getHighest(self):
         elements = [el for col in self.board for el in col]
+        print(max(elements))
         self.score += math.log(max(elements), 2)
 
 
@@ -204,5 +205,5 @@ class Game:
             self.moveRight()
         else:
             self.moveLeft()
-        getHighest()
+        self.getHighest()
         return self.getState(), self.checkGameActive()
