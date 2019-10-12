@@ -24,15 +24,15 @@ network = Network(32, 64, 4)
 
 network = tf.keras.Sequential()
 network.add(tf.keras.layers.Dense(32, input_dim = 16, activation='relu'))
-network.add(tf.keras.layers.Dense(8, activation='relu'))
+network.add(tf.keras.layers.Dense(16, activation='relu'))
 network.add(tf.keras.layers.Dense(4, activation = "softmax"))
 network.build()
-optimizer = tf.keras.optimizers.Adam(learning_rate = 0.001)
+optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0005)
 compute_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
 rollOuts = 10000
-updateOccurence = 100
+updateOccurence = 50
 g = game.Game()
 
 optimizer = tf.keras.optimizers.Adam()
@@ -84,11 +84,11 @@ def train():
                 action = np.argmax(action_dist == action)
                 loss = loss_object([action],logits)
             state, done = g.step(action)
+            g.getHighest()
             grads = tape.gradient(loss,network.trainable_variables)
             reward = g.score - prevScore
             if done: reward-=10
             rollout_mem.append([grads, reward])
-        print(g.getHighest())
         scores.append(g.score)
         rollout_mem = np.array(rollout_mem)
         rollout_mem[:,1] = discountRewards(rollout_mem[:,1])
