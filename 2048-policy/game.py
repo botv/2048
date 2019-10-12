@@ -177,6 +177,7 @@ class Game:
             for element in row:
                 if element != 0:
                     logReward += math.log(element, 2)
+        logReward += self.getHighest()
         return logReward
 
 
@@ -189,6 +190,10 @@ class Game:
                 else:
                     state.append(math.log(element, 2))
         return np.reshape(np.asarray(state), (1,len(self.board)**2))
+
+    def getHighest(self):
+        elements = [el for col in self.board for el in col]
+        return math.log(max(elements), 2)
 
 
     def step(self, action):

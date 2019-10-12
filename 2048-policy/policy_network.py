@@ -24,7 +24,6 @@ network = Network(32, 64, 4)
 
 network = tf.keras.Sequential()
 network.add(tf.keras.layers.Dense(32, input_dim = 16, activation='relu'))
-network.add(tf.keras.layers.Dense(16, activation='relu'))
 network.add(tf.keras.layers.Dense(8, activation='relu'))
 network.add(tf.keras.layers.Dense(4, activation = "softmax"))
 network.build()
@@ -89,7 +88,7 @@ def train():
             reward = g.score - prevScore
             if done: reward-=10
             rollout_mem.append([grads, reward])
-
+        print(g.getHighest())
         scores.append(g.score)
         rollout_mem = np.array(rollout_mem)
         rollout_mem[:,1] = discountRewards(rollout_mem[:,1])
