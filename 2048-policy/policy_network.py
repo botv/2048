@@ -24,6 +24,7 @@ network = Network(32, 64, 4)
 
 network = tf.keras.Sequential()
 network.add(tf.keras.layers.Dense(32, input_dim = 16, activation='relu'))
+network.add(tf.keras.layers.Dense(64, activation='relu'))
 network.add(tf.keras.layers.Dense(16, activation='relu'))
 network.add(tf.keras.layers.Dense(4, activation = "softmax"))
 network.build()
@@ -32,7 +33,7 @@ compute_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
 rollOuts = 10000
-updateOccurence = 50
+updateOccurence = 100
 g = game.Game()
 
 optimizer = tf.keras.optimizers.Adam()
@@ -106,4 +107,6 @@ def train():
             for row in g.board:
                 print(row)
 
+
 train()
+network.save_weights('./checkpoints/v1')
