@@ -25,11 +25,11 @@ network = Network(32, 64, 4)
 
 network = tf.keras.Sequential()
 network.add(tf.keras.layers.Dense(16, input_dim=16,  activation='relu'))
-network.add(tf.keras.layers.Dense(64, activation='relu'))
+network.add(tf.keras.layers.Dense(32, activation='relu'))
 network.add(tf.keras.layers.Dense(16, activation='relu'))
 network.add(tf.keras.layers.Dense(4, activation = "softmax"))
 network.build()
-optimizer = tf.keras.optimizers.Adam(learning_rate = 0.001)
+optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001)
 compute_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
