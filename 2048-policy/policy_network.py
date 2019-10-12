@@ -84,7 +84,7 @@ def train():
                 action = np.argmax(action_dist == action)
                 loss = loss_object([action],logits)
             state, done = g.step(action)
-            g.getHighest()
+            # g.getHighest()
             grads = tape.gradient(loss,network.trainable_variables)
             reward = g.score - prevScore
             if done: reward-=10
