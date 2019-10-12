@@ -71,6 +71,7 @@ def train():
 
     for e in range(rollOuts):
         g.reset()
+        g.score = 0
         rollout_mem = []
         rollout_score = 0
         done = False
@@ -88,7 +89,8 @@ def train():
             state, done = g.step(action)
             # g.getHighest()
             grads = tape.gradient(loss,network.trainable_variables)
-            reward = g.score - prevScore
+            reward = g.score
+            g.score = 0
             if done: reward-=10
             rollout_mem.append([grads, reward])
         scores.append(g.score)
