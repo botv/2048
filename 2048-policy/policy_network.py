@@ -90,10 +90,11 @@ def train():
             # g.getHighest()
             grads = tape.gradient(loss,network.trainable_variables)
             reward = g.score
+            rollout_score += reward
             g.score = 0
             if done: reward-=10
             rollout_mem.append([grads, reward])
-        scores.append(g.score)
+        scores.append(rollout_score)
         rollout_mem = np.array(rollout_mem)
         rollout_mem[:,1] = discountRewards(rollout_mem[:,1])
         for grads, reward in rollout_mem:
