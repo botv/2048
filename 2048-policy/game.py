@@ -6,6 +6,10 @@ import numpy as np
 
 class Game:
 
+    def __init__(self):
+        self.observation_space = (1,16)
+        self.action_space = 4
+
     def reset(self):
         self.board = [[0,0,0,0] for i in range(4)]
         firstRow = random.randint(0,len(self.board)-1)
@@ -17,6 +21,7 @@ class Game:
         self.board[firstRow][firstCol] = 2
         self.board[secondRow][secondCol] = 2
         self.score = 0
+        return [el for sublist in self.board for el in sublist]
 
     def randomInsert(self):
         possibleCoords = []
@@ -204,4 +209,4 @@ class Game:
             self.moveRight()
         else:
             self.moveLeft()
-        return self.getState(), self.checkGameActive()
+        return self.getState(), self.score, self.checkGameActive()
