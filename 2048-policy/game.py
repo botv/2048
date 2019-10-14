@@ -21,7 +21,14 @@ class Game:
         self.board[firstRow][firstCol] = 2
         self.board[secondRow][secondCol] = 2
         self.score = 0
-        return [el for sublist in self.board for el in sublist]
+        state = []
+        for row in self.board:
+            for element in row:
+                if element == 0:
+                    state.append(0)
+                else:
+                    state.append(math.log(element, 2))
+        return np.asarray(state)
 
     def randomInsert(self):
         possibleCoords = []
@@ -193,7 +200,7 @@ class Game:
                     state.append(0)
                 else:
                     state.append(math.log(element, 2))
-        return np.reshape(np.asarray(state), (1,len(self.board)**2))
+        return np.asarray(state)
 
     def getHighest(self):
         elements = [el for col in self.board for el in col]

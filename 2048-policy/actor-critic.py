@@ -82,19 +82,21 @@ class A2CAgent:
             # performs a full training step on the collected batch
             # note: no need to mess around with gradients, Keras API handles it
             losses = self.model.train_on_batch(observations, [acts_and_advs, returns])
-            print(f"Episode: {e}, Score: {np.mean(ep_rews[-100:])}")
+            print(f"Episode: {update}, Score: {np.mean(ep_rews[-100:])}")
         return ep_rews
 
     def _prune_actions(self, logits, env):
         possibleActions = env.getPossible()
-        print(logits.shape)
+        logits = logits[0]
         logits = [logits[i] for i in possibleActions]
         logitSum = sum(logits)
         logits = [prob / logitSum for prob in logits]
+        logits = np.reshape(logits, (1,len(logits)))
         return tf.squeeze(tf.random.categorical(logits, 1), axis=-1)
 
     def _returns_advantages(self, rewards, dones, values, next_value):
         # next_value is the bootstrap value estimate of a future state (the critic)
+        next_value = next_value.reshape(1)
         returns = np.append(np.zeros_like(rewards), next_value, axis=-1)
         # returns are calculated as discounted sum of future rewards
         for t in reversed(range(rewards.shape[0])):
