@@ -3,6 +3,7 @@ import tensorflow as tf
 import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
+import logging
 import game
 
 env = game.Game()
@@ -75,6 +76,7 @@ class A2CAgent:
                 if dones[step]:
                     ep_rews.append(0.0)
                     next_obs = env.reset()
+                    logging.info("Episode: %03d, Reward: %03d" % (len(ep_rews)-1, ep_rews[-2]))
             _, next_value = self.model.predict(next_obs[None, :])
             returns, advs = self._returns_advantages(rewards, dones, values, next_value)
             # a trick to input actions and advantages through same API
@@ -82,7 +84,7 @@ class A2CAgent:
             # performs a full training step on the collected batch
             # note: no need to mess around with gradients, Keras API handles it
             losses = self.model.train_on_batch(observations, [acts_and_advs, returns])
-            print(f"Episode: {update}, Score: {np.mean(ep_rews[-100:])}")
+            logging.debug("[%d/%d] Losses: %s" % (update+1, updates, losses))
         return ep_rews
 
     def _prune_actions(self, logits, env):
@@ -133,7 +135,7 @@ class A2CAgent:
         # here signs are flipped because optimizer minimizes
         return policy_loss - self.params['entropy']*entropy_loss
 
-
+logging.getLogger().setLevel(logging.INFO)
 model = Model(num_actions=env.action_space)
 agent = A2CAgent(model)
 agent.train(env)
