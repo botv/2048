@@ -24,12 +24,12 @@ class Network(tf.keras.Model):
 network = Network(32, 64, 4)
 
 network = tf.keras.Sequential()
-network.add(tf.keras.layers.Dense(16, input_dim=16,  activation='relu'))
-network.add(tf.keras.layers.Dense(32, activation='relu'))
-network.add(tf.keras.layers.Dense(16, activation='relu'))
+network.add(tf.keras.layers.Dense(64, input_dim=16,  activation='relu'))
+network.add(tf.keras.layers.Dense(128, activation='relu'))
+network.add(tf.keras.layers.Dense(64, activation='relu'))
 network.add(tf.keras.layers.Dense(4, activation = "softmax"))
 network.build()
-optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001)
+optimizer = tf.keras.optimizers.RMSprop(learning_rate = 0.0007)
 compute_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 
@@ -37,12 +37,12 @@ rollOuts = 10000
 updateOccurence = 100
 g = game.Game()
 
-optimizer = tf.keras.optimizers.Adam()
+#optimizer = tf.keras.optimizers.Adam()
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits = True)
 
 scores = []
 
-def discountRewards(reward, gamma = 0.7):
+def discountRewards(reward, gamma = 0.9):
     discounted_reward = np.zeros_like(reward)
     running_add = 0
     for t in reversed(range(0, reward.size)):

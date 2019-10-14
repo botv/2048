@@ -160,8 +160,8 @@ class Game:
                 prev = next_
             elif prev == next_:
                 store.append(prev + next_)
-                # if acting:
-                #     self.score += math.log(prev + next_, 2)
+                if acting:
+                    self.score += math.log(prev + next_, 2)
                 prev = None
             else:
                 store.append(prev)
@@ -192,7 +192,6 @@ class Game:
 
     def getHighest(self):
         elements = [el for col in self.board for el in col]
-        print(math.log(max(elements), 2))
         self.score += math.log(max(elements), 2)
 
 
@@ -205,5 +204,4 @@ class Game:
             self.moveRight()
         else:
             self.moveLeft()
-        self.getHighest()
         return self.getState(), self.checkGameActive()
