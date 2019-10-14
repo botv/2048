@@ -138,6 +138,5 @@ class A2CAgent:
 logging.getLogger().setLevel(logging.INFO)
 model = Model(num_actions=env.action_space)
 agent = A2CAgent(model)
-agent.train(env)
-
 rewards_history = agent.train(env)
+agent.model.save_weights('Saved/v1/a2c.h5')
