@@ -60,18 +60,19 @@ class A2CAgent:
 
     def train(self, env, batch_sz=32, updates=1000):
         # storage helpers for a single batch of data
-        actions = np.empty((batch_sz,), dtype=np.int32)
-        rewards, dones, values = np.empty((3, batch_sz))
-        observations = np.empty((batch_sz, 16))
         # training loop: collect samples, send to optimizer, repeat updates times
         ep_rews = [0.0]
         next_obs = env.reset()
         for update in range(updates):
+            actions = np.empty((batch_sz,), dtype=np.int32)
+            rewards, dones, values = np.empty((3, batch_sz))
+            observations = np.empty((batch_sz, 16))
             for step in range(batch_sz):
                 observations[step] = next_obs.copy()
                 logits, value = self.model.predict(next_obs[None, :])
                 actions[step], values[step] = self._prune_actions(logits, env), np.squeeze(value, axis=-1)
                 next_obs, rewards[step], dones[step] = env.step(actions[step])
+                env.score = 0
                 ep_rews[-1] += rewards[step]
                 if dones[step]:
                     ep_rews.append(0.0)
