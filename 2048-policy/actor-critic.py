@@ -58,7 +58,7 @@ class A2CAgent:
             loss=[self._logits_loss, self._value_loss]
         )
 
-    def train(self, env, batch_sz=32, updates=1000):
+    def train(self, env, batch_sz=32, updates=10000):
         # storage helpers for a single batch of data
         # training loop: collect samples, send to optimizer, repeat updates times
         ep_rews = [0.0]
@@ -77,7 +77,7 @@ class A2CAgent:
                 if dones[step]:
                     ep_rews.append(0.0)
                     next_obs = env.reset()
-                    logging.info("Episode: %03d, Reward: %03d" % (len(ep_rews)-1, ep_rews[-2]))
+                    print("Episode: %03d, Reward: %03d, Update: %d" % (len(ep_rews)-1, ep_rews[-2], update))
             _, next_value = self.model.predict(next_obs[None, :])
             returns, advs = self._returns_advantages(rewards, dones, values, next_value)
             # a trick to input actions and advantages through same API
