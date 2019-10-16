@@ -58,7 +58,7 @@ class A2CAgent:
             loss=[self._logits_loss, self._value_loss]
         )
 
-    def train(self, env, batch_sz=32, updates=10000):
+    def train(self, env, batch_sz=32, updates=9500):
         # storage helpers for a single batch of data
         # training loop: collect samples, send to optimizer, repeat updates times
         ep_rews = [0.0]
@@ -139,4 +139,4 @@ class A2CAgent:
 model = Model(num_actions=env.action_space)
 agent = A2CAgent(model)
 rewards_history = agent.train(env)
-agent.model.save_weights('Saved/v1/a2c.h5')
+agent.model.save_weights('Saved/v1_a2c.h5')
