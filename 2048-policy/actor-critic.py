@@ -88,7 +88,7 @@ class A2CAgent:
             # performs a full training step on the collected batch
             # note: no need to mess around with gradients, Keras API handles it
             losses = self.model.train_on_batch(observations, [acts_and_advs, returns])
-            logging.debug("[%d/%d] Losses: %s" % (update+1, updates, losses))
+            tf.keras.backend.clear_session()
         return ep_rews
 
     def _prune_actions(self, logits, env):
