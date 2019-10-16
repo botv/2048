@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 import tensorflow as tf
 import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
@@ -11,7 +12,6 @@ env = game.Game()
 class ProbabilityDistribution(tf.keras.Model):
     def call(self, logits):
         # sample a random categorical action from given logits
-        print(type(logits))
         logits = logits.numpy()
         possibleActions = env.getPossible()
         logits = [logits[i] for i in possible_actions]
@@ -77,6 +77,9 @@ class A2CAgent:
                 if dones[step]:
                     ep_rews.append(0.0)
                     next_obs = env.reset()
+                    if update >= 999:
+                        for var, obj in locals().items():
+                            print(var, sys.getsizeof(obj))
                     print("Episode: %03d, Reward: %03d, Update: %d" % (len(ep_rews)-1, ep_rews[-2], update))
             _, next_value = self.model.predict(next_obs[None, :])
             returns, advs = self._returns_advantages(rewards, dones, values, next_value)
@@ -136,7 +139,6 @@ class A2CAgent:
         # here signs are flipped because optimizer minimizes
         return policy_loss - self.params['entropy']*entropy_loss
 
-logging.getLogger().setLevel(logging.INFO)
 model = Model(num_actions=env.action_space)
 agent = A2CAgent(model)
 rewards_history = agent.train(env)
