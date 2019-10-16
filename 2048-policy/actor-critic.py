@@ -77,9 +77,6 @@ class A2CAgent:
                 if dones[step]:
                     ep_rews.append(0.0)
                     next_obs = env.reset()
-                    if update >= 999:
-                        for var, obj in locals().items():
-                            print(var, sys.getsizeof(obj))
                     print("Episode: %03d, Reward: %03d, Update: %d" % (len(ep_rews)-1, ep_rews[-2], update))
             _, next_value = self.model.predict(next_obs[None, :])
             returns, advs = self._returns_advantages(rewards, dones, values, next_value)
