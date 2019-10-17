@@ -6,7 +6,7 @@ import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
 import logging
 import game
-
+print('prinin')
 env = game.Game()
 
 class ProbabilityDistribution(tf.keras.Model):
@@ -109,12 +109,22 @@ class A2CAgent:
         advantages = returns - values
         return returns, advantages
 
+    def _load_saved(self, env):
+        print('called')
+        self.train(env, updates=1)
+        print('trained')
+        self.model.load_weights('Saved/v1_a2c.h5')
+
     def test(self, env):
         obs, done, ep_reward = env.reset(), False, 0
         while not done:
-            action, _ = self.model.action_value(obs[None, :])
-            obs, reward, done, _ = env.step(action)
+            logits, value = self.model.predict(obs[None, :])
+            action = self._prune_actions(logits, env)
+            obs, reward, done = env.step(action)
+            env.score = 0
             ep_reward += reward
+        for row in env.board:
+            print(row)
         return ep_reward
 
     def _value_loss(self, returns, value):
@@ -138,5 +148,7 @@ class A2CAgent:
 
 model = Model(num_actions=env.action_space)
 agent = A2CAgent(model)
+agent._load_saved(env)
 rewards_history = agent.train(env)
-agent.model.save_weights('Saved/v1_a2c.h5')
+print(agent.test(env))
+agent.model.save_weights('Saved/v2_a2c.h5')
