@@ -148,7 +148,7 @@ class A2CAgent:
 
 model = Model(num_actions=env.action_space)
 agent = A2CAgent(model)
-agent._load_saved(env)
+# agent._load_saved(env)
 rewards_history = agent.train(env)
 print(agent.test(env))
-agent.model.save_weights('Saved/v2_a2c.h5')
+agent.model.save_weights('Saved/v3_a2c.h5')

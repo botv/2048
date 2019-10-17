@@ -173,7 +173,7 @@ class Game:
             elif prev == next_:
                 store.append(prev + next_)
                 if acting:
-                    self.score += math.log(prev + next_, 2)
+                    self.score += prev + next_
                 prev = None
             else:
                 store.append(prev)
