@@ -172,8 +172,6 @@ class Game:
                 prev = next_
             elif prev == next_:
                 store.append(prev + next_)
-                if acting:
-                    self.score += prev + next_
                 prev = None
             else:
                 store.append(prev)
@@ -206,8 +204,30 @@ class Game:
         elements = [el for col in self.board for el in col]
         self.score += math.log(max(elements), 2)
 
+    def emptyCells(self, board):
+        count = 0
+        for row in board:
+            for el in row:
+                if el == 0:
+                    count += 1
+        return count
+
+    def newMax(self, curState, prevState):
+        curState = [el for row in curState for el in row]
+        prevState = [el for row in prevState for el in row]
+        if max(curState) == max(prevState):
+            return 0
+        else:
+            return math.log(max(curState), 2)
+
+
+    def getReward(self, prevState, curState):
+        merges = self.emptyCells(curState) - self.emptyCells(prevState)
+        newMax = self.newMax(curState, prevState)
+        return merges + newMax
 
     def step(self, action):
+        prev_state = self.board.copy()
         if action == 0:
             self.moveUp()
         elif action == 1:
@@ -216,4 +236,4 @@ class Game:
             self.moveRight()
         else:
             self.moveLeft()
-        return self.getState(), self.score, self.checkGameActive()
+        return self.getState(), self.getReward(prev_state, self.board), self.checkGameActive()

@@ -68,11 +68,11 @@ class A2CAgent:
             rewards, dones, values = np.empty((3, batch_sz))
             observations = np.empty((batch_sz, 16))
             for step in range(batch_sz):
-                observations[step] = next_obs.copy()
+                prev_obs = next_obs.copy()
+                observations[step] = prev_obs
                 logits, value = self.model.predict(next_obs[None, :])
                 actions[step], values[step] = self._prune_actions(logits, env), np.squeeze(value, axis=-1)
                 next_obs, rewards[step], dones[step] = env.step(actions[step])
-                env.score = 0
                 ep_rews[-1] += rewards[step]
                 if dones[step]:
                     ep_rews.append(0.0)
