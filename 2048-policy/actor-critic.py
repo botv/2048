@@ -5,8 +5,9 @@ import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
 import logging
+from copy import deepcopy
 import game
-print('prinin')
+
 env = game.Game()
 
 class ProbabilityDistribution(tf.keras.Model):
@@ -23,8 +24,14 @@ class Model(tf.keras.Model):
     def __init__(self, num_actions=4):
         super().__init__('mlp_policy')
         # no tf.get_variable(), just simple Keras API
-        self.hidden1 = kl.Dense(128, activation='relu')
-        self.hidden2 = kl.Dense(128, activation='relu')
+        self.conv1 = kl.Conv2D(128,2,padding='same',activation='relu')
+        self.conv2 = kl.Conv2D(128,1,padding='same',activation='relu')
+        self.conv3 = kl.Conv2D(128,2,padding='same',activation='relu')
+        self.conv4 = kl.Conv2D(128,1,padding='same',activation='relu')
+        self.flatten1 = kl.Flatten()
+        self.flatten2 = kl.Flatten()
+        self.hidden1 = kl.Dense(256, activation='relu')
+        self.hidden2 = kl.Dense(256, activation='relu')
         self.value = kl.Dense(1, name='value')
         # logits are unnormalized log probabilities
         self.logits = kl.Dense(num_actions, name='policy_logits')
@@ -33,8 +40,14 @@ class Model(tf.keras.Model):
     def call(self, x):
         # inputs is a numpy array, convert to Tensor
         # separate hidden layers from the same input tensor
-        hidden_logs = self.hidden1(x)
-        hidden_vals = self.hidden2(x)
+        hl = self.conv1(x)
+        hl = self.conv2(hl)
+        hl = self.flatten1(hl)
+        hidden_logs = self.hidden1(hl)
+        # hv = self.conv3(x)
+        hv = self.conv4(x)
+        hv = self.flatten2(hv)
+        hidden_vals = self.hidden2(hv)
         return self.logits(hidden_logs), self.value(hidden_vals)
 
     def action_value(self, obs):
@@ -62,21 +75,21 @@ class A2CAgent:
         # storage helpers for a single batch of data
         # training loop: collect samples, send to optimizer, repeat updates times
         ep_rews = [0.0]
-        next_obs = env.reset()
+        next_obs, rec_obs = env.reset()
         for update in range(updates):
             actions = np.empty((batch_sz,), dtype=np.int32)
             rewards, dones, values = np.empty((3, batch_sz))
-            observations = np.empty((batch_sz, 16))
+            observations = np.empty((batch_sz, 4,4,16))
             for step in range(batch_sz):
-                prev_obs = next_obs.copy()
+                prev_obs = deepcopy(next_obs)
                 observations[step] = prev_obs
                 logits, value = self.model.predict(next_obs[None, :])
                 actions[step], values[step] = self._prune_actions(logits, env), np.squeeze(value, axis=-1)
-                next_obs, rewards[step], dones[step] = env.step(actions[step])
+                next_obs, rec_obs, rewards[step], dones[step] = env.step(actions[step])
                 ep_rews[-1] += rewards[step]
                 if dones[step]:
                     ep_rews.append(0.0)
-                    next_obs = env.reset()
+                    next_obs, rec_obs = env.reset()
                     print("Episode: %03d, Reward: %03d, Update: %d" % (len(ep_rews)-1, ep_rews[-2], update))
             _, next_value = self.model.predict(next_obs[None, :])
             returns, advs = self._returns_advantages(rewards, dones, values, next_value)

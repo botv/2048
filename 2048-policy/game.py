@@ -21,14 +21,7 @@ class Game:
         self.board[firstRow][firstCol] = 2
         self.board[secondRow][secondCol] = 2
         self.score = 0
-        state = []
-        for row in self.board:
-            for element in row:
-                if element == 0:
-                    state.append(0)
-                else:
-                    state.append(math.log(element, 2))
-        return np.asarray(state)
+        return self.getState(), self.boardVector()
 
     def randomInsert(self):
         possibleCoords = []
@@ -181,16 +174,16 @@ class Game:
         store.extend([0] * (len(nums) - len(store)))
         return store
 
-    def getReward(self):
-        logReward = 0
-        for row in self.board:
-            for element in row:
-                if element != 0:
-                    logReward += math.log(element, 2)
-        return logReward
+    # def getReward(self):
+    #     logReward = 0
+    #     for row in self.board:
+    #         for element in row:
+    #             if element != 0:
+    #                 logReward += math.log(element, 2)
+    #     return logReward
 
 
-    def getState(self):
+    def boardVector(self):
         state = []
         for row in self.board:
             for element in row:
@@ -220,6 +213,17 @@ class Game:
         else:
             return math.log(max(curState), 2)
 
+    def getState(self):
+        power_mat = np.zeros(shape=(4,4,16),dtype=np.float32)
+        for i in range(4):
+            for j in range(4):
+                if(self.board[i][j]==0):
+                    power_mat[i][j][0] = 1.0
+                else:
+                    power = int(math.log(self.board[i][j],2))
+                    power_mat[i][j][power] = 1.0
+        return power_mat
+
 
     def getReward(self, prevState, curState):
         merges = self.emptyCells(curState) - self.emptyCells(prevState)
@@ -236,4 +240,4 @@ class Game:
             self.moveRight()
         else:
             self.moveLeft()
-        return self.getState(), self.getReward(prev_state, self.board), self.checkGameActive()
+        return self.getState(), self.boardVector(), self.getReward(prev_state, self.board), self.checkGameActive()
